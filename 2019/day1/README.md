@@ -1,4 +1,4 @@
-# Day1: 로켓 방정식의 횡포 (The Tyranny of the Rocket Equation)
+# Day 1: 로켓 방정식의 횡포 (The Tyranny of the Rocket Equation)
 <https://adventofcode.com/2019/day/1>
 
 ## Part 1
