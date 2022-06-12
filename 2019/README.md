@@ -5,3 +5,4 @@
 - [Day 2: 1202 프로그램 알람 (1202 Program Alarm)](./day2)
 - [Day 3: 교차 전선 (Crossed Wires)](./day3)
 - [Day 4: 보안 컨테이너 (Secure Container)](./day4)
+- [Day 5: 소행성 예보 맑음 (Sunny with a Chance of Asteroids)](./day5)
