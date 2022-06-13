@@ -3,6 +3,10 @@ defmodule Amplifier.Executor do
   @multiply 2
   @input 3
   @output 4
+  @jump_if_true 5
+  @jump_if_false 6
+  @less_than 7
+  @equals 8
   @exit 99
 
   def exec(memory, offset, inputs) do
@@ -44,6 +48,52 @@ defmodule Amplifier.Executor do
           offset + 2,
           inputs
         }
+
+      @jump_if_true ->
+        jump_offset =
+          if get_value(memory, offset + 1, param1_mode) != 0 do
+            get_value(memory, offset + 2, param2_mode)
+          else
+            offset + 3
+          end
+
+        exec(memory, jump_offset, inputs)
+
+      @jump_if_false ->
+        jump_offset =
+          if get_value(memory, offset + 1, param1_mode) == 0 do
+            get_value(memory, offset + 2, param2_mode)
+          else
+            offset + 3
+          end
+
+        exec(memory, jump_offset, inputs)
+
+      @less_than ->
+        param1 = get_value(memory, offset + 1, param1_mode)
+        param2 = get_value(memory, offset + 2, param2_mode)
+
+        memory =
+          if param1 < param2 do
+            update_memory(memory, offset + 3, 1)
+          else
+            update_memory(memory, offset + 3, 0)
+          end
+
+        exec(memory, offset + 4, inputs)
+
+      @equals ->
+        param1 = get_value(memory, offset + 1, param1_mode)
+        param2 = get_value(memory, offset + 2, param2_mode)
+
+        memory =
+          if param1 == param2 do
+            update_memory(memory, offset + 3, 1)
+          else
+            update_memory(memory, offset + 3, 0)
+          end
+
+        exec(memory, offset + 4, inputs)
 
       @exit ->
         :exit
@@ -171,9 +221,35 @@ defmodule Day5.Part1 do
   end
 end
 
+defmodule Day5.Part2 do
+  def run(memory) do
+    {:ok, pid} = Amplifier.start_link(memory: memory)
+    Amplifier.push_input(pid, 5)
+
+    run_amplifier(pid)
+    |> tap(fn _ -> Amplifier.exit(pid) end)
+  end
+
+  defp run_amplifier(pid) do
+    case Amplifier.exec(pid) do
+      :input ->
+        raise "Call Input Twice"
+
+      {:output, output} ->
+        IO.inspect(output)
+
+        run_amplifier(pid)
+
+      :exit ->
+        IO.inspect("Finish")
+    end
+  end
+end
+
 File.read!("input.txt")
 |> String.split(",", trim: true)
 |> Enum.map(&String.to_integer/1)
 |> Enum.with_index()
 |> Enum.into(%{}, fn {val, i} -> {i, val} end)
 |> tap(&(Day5.Part1.run(&1)))
+|> tap(&(Day5.Part2.run(&1)))
