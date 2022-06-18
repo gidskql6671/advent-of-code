@@ -6,3 +6,4 @@
 - [Day 3: 교차 전선 (Crossed Wires)](./day3)
 - [Day 4: 보안 컨테이너 (Secure Container)](./day4)
 - [Day 5: 소행성 예보 맑음 (Sunny with a Chance of Asteroids)](./day5)
+- [Day 6: 우주 궤도 지도 (Universal Orbit Map)](./day6)
