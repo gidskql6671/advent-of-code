@@ -235,9 +235,60 @@ defmodule Day7.Part1 do
   end
 end
 
+defmodule Day7.Part2 do
+  def run(memory) do
+    [5, 6, 7, 8, 9]
+    |> Permutation.of()
+    |> Enum.map(&run_phase(memory, &1))
+    |> Enum.max()
+  end
+
+  defp run_phase(memory, phases) do
+    amplifiers = setup_amplifiers(memory, phases)
+
+    amplifiers
+    |> Stream.cycle()
+    |> Enum.reduce_while(0, fn amplifier, signal ->
+      Amplifier.push_input(amplifier, signal)
+
+      case run_amplifier(amplifier) do
+        :exit ->
+          {:halt, signal}
+
+        signal ->
+          {:cont, signal}
+      end
+    end)
+    |> tap(fn _ -> Enum.each(amplifiers, &Amplifier.exit/1) end)
+  end
+
+  defp setup_amplifiers(memory, phases) do
+    Enum.map(phases, fn phase ->
+      {:ok, pid} = Amplifier.start_link(memory: memory)
+      Amplifier.push_input(pid, phase)
+
+      pid
+    end)
+  end
+
+  defp run_amplifier(pid) do
+    case Amplifier.exec(pid) do
+      :input ->
+        raise "unexpected input instruction"
+
+      {:output, output} ->
+        output
+
+      :exit ->
+        :exit
+    end
+  end
+end
+
 File.read!("input.txt")
 |> String.split(",", trim: true)
 |> Enum.map(&String.to_integer/1)
 |> Enum.with_index()
 |> Enum.into(%{}, fn {val, i} -> {i, val} end)
 |> tap(&(Day7.Part1.run(&1) |> IO.inspect(label: "Part 1")))
+|> tap(&(Day7.Part2.run(&1) |> IO.inspect(label: "Part 2")))
