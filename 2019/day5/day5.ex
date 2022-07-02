@@ -122,7 +122,7 @@ defmodule Amplifier.Executor do
 end
 
 defmodule Amplifier.Memory do
-  def run(memory), do: :ets.new(__MODULE__, [:set, :public])
+  def run(), do: :ets.new(__MODULE__, [:set, :public])
 
   def get(pid, key), do: :ets.lookup(pid, key) |> Keyword.get(key)
 
@@ -148,7 +148,7 @@ defmodule Amplifier do
 
   # Server
   def init({memory}) do
-    ets = Memory.run(memory)
+    ets = Memory.run()
 
     Memory.set(ets,
       memory: memory,
