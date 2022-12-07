@@ -1,4 +1,4 @@
-# Day 1: 가위바위보 (Rock Paper Scissors)
+# Day 2: 가위바위보 (Rock Paper Scissors)
 <https://adventofcode.com/2022/day/2>
 
 ## Part 1
