@@ -5,3 +5,4 @@
 - [Day 2: 가위바위보 (Rock Paper Scissors)](./day2)
 - [Day 3: 배낭 재정비 (Rucksack Reorganization)](./day3)
 - [Day 4: 캠프 청소 (Camp Cleanup)](./day4)
+- [Day 5: 물자 더미 (Supply Stacks)](./day5/)
