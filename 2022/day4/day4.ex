@@ -7,6 +7,14 @@ defmodule Day4 do
     |> IO.inspect(label: "part1")
   end
 
+  def part2(input) do
+    input
+    |> parse_input()
+    |> find_overlaps_pair()
+    |> Enum.count()
+    |> IO.inspect(label: "part2")
+  end
+
   defp parse_input(input) do
     input
     |> String.split("\n")
@@ -34,7 +42,19 @@ defmodule Day4 do
       true -> false
     end
   end
+
+  defp find_overlaps_pair(pairs) do
+    Enum.filter(pairs, &overlaps?/1)
+  end
+
+  defp overlaps?({{l1, r1}, {l2, r2}}) do
+    cond do
+      l1 > r2 or l2 > r1 -> false
+      true -> true
+    end
+  end
 end
 
 File.read!("input.txt")
 |> tap(&Day4.part1/1)
+|> tap(&Day4.part2/1)
