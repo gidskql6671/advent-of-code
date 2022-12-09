@@ -28,9 +28,24 @@ mjqjpqmgbljsphdztnvjfqwrcgsmlb
 
 다음은 몇 가지 예입니다.
 
-- bvwbjplbgvbhsrlpgdmjqwftvncz: `5`개의 문자가 지나간 뒤 첫 번째 마커
-- nppdvjthqldpwncqszvftbrmjlhg: `6`개의 문자가 지나간 뒤 첫 번째 마커
-- nznrnfrfntjfmvfwmzdfjlvtqnbhcprsg: `10`개의 문자가 지나간 뒤 첫 번째 마커
-- zcfzfwzzqfrljwzlrfnpqdbhtmscgvjw: `11`개의 문자가 지나간 뒤 첫 번째 마커
+- bvwbjplbgvbhsrlpgdmjqwftvncz: `5`개의 문자가 처리된 뒤 첫 번째 마커
+- nppdvjthqldpwncqszvftbrmjlhg: `6`개의 문자가 처리된 뒤 첫 번째 마커
+- nznrnfrfntjfmvfwmzdfjlvtqnbhcprsg: `10`개의 문자가 처리된 뒤 첫 번째 마커
+- zcfzfwzzqfrljwzlrfnpqdbhtmscgvjw: `11`개의 문자가 처리된 뒤 첫 번째 마커
 
 첫 번째 패킷 시작 마커가 감지되기 ​전까지에 몇 개의 문자를 처리해야 합니까?
+
+## Part 2
+장치의 통신 시스템이 패킷을 올바르게 감지하고 있지만, 여전히 작동하지 않습니다. 장치가 **메시지** 역시 찾도록 고쳐야할 것 같습니다.
+
+**메시지 시작 마커**는 4개가 아닌 **14개의 개별 문자**로 구성된다는 점을 제외하면 패킷 시작 마커와 같습니다.
+
+위의 모든 예에 대한 메시지 시작 마커의 첫 번째 위치는 다음과 같습니다.
+
+- mjqjpqmgbljsphdztnvjfqwrcgsmlb: `19`개의 문자가 처리된 뒤 첫 번째 마커
+- bvwbjplbgvbhsrlpgdmjqwftvncz: `23`개의 문자가 처리된 뒤 첫 번째 마커
+- nppdvjthqldpwncqszvftbrmjlhg: `23`개의 문자가 처리된 뒤 첫 번째 마커
+- nznrnfrfntjfmvfwmzdfjlvtqnbhcprsg: `29`개의 문자가 처리된 뒤 첫 번째 마커
+- zcfzfwzzqfrljwzlrfnpqdbhtmscgvjw: `26`개의 문자가 처리된 뒤 첫 번째 마커
+
+첫 번째 메시지 시작 마커가 감지되기 ​​전까지에 몇 개의 문자를 처리해야 합니까?
