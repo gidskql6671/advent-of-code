@@ -7,3 +7,4 @@
 - [Day 4: 캠프 청소 (Camp Cleanup)](./day4)
 - [Day 5: 물자 더미 (Supply Stacks)](./day5/)
 - [Day 6: 튜닝 문제 (Tuning Trouble)](./day6/)
+- [Day 7: 기기에 남은 공간이 없음 (No Space Left On Device)](./day7/)
