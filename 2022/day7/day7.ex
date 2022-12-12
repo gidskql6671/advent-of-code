@@ -9,6 +9,14 @@ defmodule Day7 do
     |> IO.inspect(label: "part1")
   end
 
+  def part2(input) do
+    input
+    |> parse_input()
+    |> simulate()
+    |> find_deletable_least_size(30_000_000, 70_000_000)
+    |> IO.inspect(label: "part2")
+  end
+
   defp parse_input(input) do
     input
     |> String.split("\n")
@@ -85,7 +93,21 @@ defmodule Day7 do
 
     {[{cur_directory_name, total_size} | result], total_size}
   end
+
+  defp find_deletable_least_size(storage, need_space, total_available_space) do
+    sizes =
+      storage
+      |> find_directories_size_less_than(total_available_space)
+      |> Enum.map(&elem(&1, 1))
+      |> Enum.sort()
+
+    unused_space = total_available_space - Enum.max(sizes)
+    least_delete_size = need_space - unused_space
+
+    Enum.find(sizes, fn size -> size >= least_delete_size end)
+  end
 end
 
 File.read!("input.txt")
 |> tap(&Day7.part1/1)
+|> tap(&Day7.part2/1)
