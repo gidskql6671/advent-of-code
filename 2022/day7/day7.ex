@@ -4,6 +4,8 @@ defmodule Day7 do
     |> parse_input()
     |> simulate()
     |> find_directories_size_less_than(100_000)
+    |> Enum.map(&elem(&1, 1))
+    |> Enum.sum()
     |> IO.inspect(label: "part1")
   end
 
@@ -52,12 +54,10 @@ defmodule Day7 do
   end
 
   defp find_directories_size_less_than(storage, size) do
-    {result, _} = calculate_directory_size(storage)
-
-    result
-    |> Enum.map(&elem(&1, 1))
-    |> Enum.filter(&(&1 <= size))
-    |> Enum.sum()
+    storage
+    |> calculate_directory_size()
+    |> elem(0)
+    |> Enum.filter(fn {_k, v} -> v <= size end)
   end
 
   defp calculate_directory_size(storage, cur_dir \\ ["/"]) do
