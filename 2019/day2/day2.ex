@@ -4,15 +4,13 @@ defmodule Amplifier do
   defp do_run(memory, offset) do
     case Map.get(memory, offset) do
       1 ->
-        new_val =
-          get_value(memory, offset + 1) + get_value(memory, offset + 2)
+        new_val = get_value(memory, offset + 1) + get_value(memory, offset + 2)
 
         memory = update_memory(memory, offset + 3, new_val)
         do_run(memory, offset + 4)
 
       2 ->
-        new_val =
-          get_value(memory, offset + 1) * get_value(memory, offset + 2)
+        new_val = get_value(memory, offset + 1) * get_value(memory, offset + 2)
 
         memory = update_memory(memory, offset + 3, new_val)
         do_run(memory, offset + 4)

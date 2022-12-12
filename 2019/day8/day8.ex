@@ -27,7 +27,7 @@ defmodule Day8.Part1 do
   defp count_digit(layer, digit) do
     layer
     |> Enum.flat_map(& &1)
-    |> Enum.count(& &1 == digit)
+    |> Enum.count(&(&1 == digit))
   end
 end
 

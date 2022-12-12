@@ -200,8 +200,7 @@ defmodule Permutation do
   def of([]), do: [[]]
 
   def of(list) do
-    for h <- list, t <- of(list -- [h]),
-      do: [h | t]
+    for h <- list, t <- of(list -- [h]), do: [h | t]
   end
 end
 

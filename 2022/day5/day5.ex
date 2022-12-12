@@ -19,7 +19,7 @@ defmodule Day5 do
     {started_stacks, procedure} =
       input
       |> String.split("\n")
-      |> Enum.split_while(& &1 != "")
+      |> Enum.split_while(&(&1 != ""))
 
     {
       parse_started_stacks(started_stacks),
@@ -38,7 +38,7 @@ defmodule Day5 do
       |> Enum.with_index(1)
       |> Enum.reduce(result, fn
         {["[", crate | _], index}, acc ->
-          Map.update(acc, index, [crate], & [crate | &1])
+          Map.update(acc, index, [crate], &[crate | &1])
 
         _, acc ->
           acc
@@ -56,7 +56,7 @@ defmodule Day5 do
       %{
         count: String.to_integer(count),
         from: String.to_integer(from),
-        to: String.to_integer(to),
+        to: String.to_integer(to)
       }
     end)
   end
