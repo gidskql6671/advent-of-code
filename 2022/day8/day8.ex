@@ -70,68 +70,30 @@ defmodule Day8 do
   end
 
   defp calculate_scenic_score(grid, y, x, n, m) do
-    get_visible_count(grid, y, x, n, m, :left) *
-      get_visible_count(grid, y, x, n, m, :right) *
-      get_visible_count(grid, y, x, n, m, :up) *
-      get_visible_count(grid, y, x, n, m, :down)
+    [:left, :right, :up, :down]
+    |> Enum.map(&get_visible_count(grid, y, x, n, m, &1))
+    |> Enum.product()
   end
 
-  defp get_visible_count(_grid, _y, 0, _n, _m, :left), do: 0
-  defp get_visible_count(_grid, _y, x, _n, x, :right), do: 0
-  defp get_visible_count(_grid, 0, _x, _n, _m, :up), do: 0
-  defp get_visible_count(_grid, y, _x, y, _m, :down), do: 0
-
-  defp get_visible_count(grid, y, x, _n, _m, :left) do
+  defp get_visible_count(grid, y, x, n, m, dir) do
     tree_height = get_in(grid, [y, x])
 
-    Enum.reduce_while((x - 1)..0, 0, fn other_x, acc ->
-      other_height = get_in(grid, [y, other_x])
-
-      cond do
-        other_height >= tree_height -> {:halt, acc + 1}
-        true -> {:cont, acc + 1}
-      end
+    get_iter(y, x, n, m, dir)
+    |> Enum.reduce_while(0, fn other_pos, acc ->
+      if get_height(grid, other_pos) < tree_height, do: {:cont, acc + 1}, else: {:halt, acc + 1}
     end)
   end
 
-  defp get_visible_count(grid, y, x, _n, m, :right) do
-    tree_height = get_in(grid, [y, x])
+  defp get_iter(_y, 0, _n, _m, :left), do: []
+  defp get_iter(_y, x, _n, x, :right), do: []
+  defp get_iter(0, _x, _n, _m, :up), do: []
+  defp get_iter(y, _x, y, _m, :down), do: []
+  defp get_iter(y, x, _n, _m, :left), do: Enum.map((x - 1)..0, &{y, &1})
+  defp get_iter(y, x, _n, m, :right), do: Enum.map((x + 1)..m, &{y, &1})
+  defp get_iter(y, x, _n, _m, :up), do: Enum.map((y - 1)..0, &{&1, x})
+  defp get_iter(y, x, n, _m, :down), do: Enum.map((y + 1)..n, &{&1, x})
 
-    Enum.reduce_while((x + 1)..m, 0, fn other_x, acc ->
-      other_height = get_in(grid, [y, other_x])
-
-      cond do
-        other_height >= tree_height -> {:halt, acc + 1}
-        true -> {:cont, acc + 1}
-      end
-    end)
-  end
-
-  defp get_visible_count(grid, y, x, _n, _m, :up) do
-    tree_height = get_in(grid, [y, x])
-
-    Enum.reduce_while((y - 1)..0, 0, fn other_y, acc ->
-      other_height = get_in(grid, [other_y, x])
-
-      cond do
-        other_height >= tree_height -> {:halt, acc + 1}
-        true -> {:cont, acc + 1}
-      end
-    end)
-  end
-
-  defp get_visible_count(grid, y, x, n, _m, :down) do
-    tree_height = get_in(grid, [y, x])
-
-    Enum.reduce_while((y + 1)..n, 0, fn other_y, acc ->
-      other_height = get_in(grid, [other_y, x])
-
-      cond do
-        other_height >= tree_height -> {:halt, acc + 1}
-        true -> {:cont, acc + 1}
-      end
-    end)
-  end
+  defp get_height(grid, {y, x}), do: get_in(grid, [y, x])
 end
 
 File.read!("input.txt")
