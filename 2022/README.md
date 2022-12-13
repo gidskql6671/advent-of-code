@@ -8,3 +8,4 @@
 - [Day 5: 물자 더미 (Supply Stacks)](./day5/)
 - [Day 6: 튜닝 문제 (Tuning Trouble)](./day6/)
 - [Day 7: 기기에 남은 공간이 없음 (No Space Left On Device)](./day7/)
+- [Day 8: 트리탑 트리 하우스 (Treetop Tree House)](./day8/)
