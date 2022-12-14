@@ -10,3 +10,4 @@
 - [Day 7: 기기에 남은 공간이 없음 (No Space Left On Device)](./day7/)
 - [Day 8: 트리탑 트리 하우스 (Treetop Tree House)](./day8/)
 - [Day 9: 밧줄 다리 (Rope Bridge)](./day9/)
+- [Day 10: 브라운관 (Cathode-Ray Tube)](./day10/)
