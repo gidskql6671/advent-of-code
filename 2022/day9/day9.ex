@@ -3,8 +3,19 @@ defmodule Day9 do
     input
     |> parse_input()
     |> simulate()
+    |> hd()
     |> MapSet.size()
     |> IO.inspect(label: "part1")
+  end
+
+  def part2(input) do
+    input
+    |> parse_input()
+    |> simulate(10)
+    |> Enum.take(-1)
+    |> hd()
+    |> MapSet.size()
+    |> IO.inspect(label: "part2")
   end
 
   defp parse_input(input) do
@@ -25,28 +36,47 @@ defmodule Day9 do
     end)
   end
 
-  defp simulate(operations) do
-    head = {0, 0}
-    tail = {0, 0}
-    visited = MapSet.new([{0, 0}])
+  defp simulate(operations, knot_count \\ 2) do
+    [head | tails] = Enum.map(1..knot_count, fn _ -> {0, 0} end)
+    visited_list = Enum.map(2..knot_count, fn _ -> MapSet.new([{0, 0}]) end)
 
-    do_simulate(operations, head, tail, visited)
+    do_simulate(operations, head, tails, visited_list)
   end
 
-  defp do_simulate([], _head, _tail, visited), do: visited
+  defp do_simulate([], _head, _tails, visited_list), do: visited_list
 
-  defp do_simulate([operation | operations], head, tail, visited) do
-    head = move_head(head, operation)
+  defp do_simulate([{dir, distance} | operations], head, tails, visited_list) do
+    {head, tails, visited_list} =
+      1..distance
+      |> Enum.reduce({head, tails, visited_list}, fn _, {head, tails, visited_list} ->
+        head = move_head(head, {dir, 1})
 
-    {tail, visited} = move_tail(head, tail, visited)
+        {tails, visited_list} = move_tails(head, tails, visited_list)
 
-    do_simulate(operations, head, tail, visited)
+        {head, tails, visited_list}
+      end)
+
+    do_simulate(operations, head, tails, visited_list)
   end
 
   defp move_head({y, x}, {:up, distance}), do: {y - distance, x}
   defp move_head({y, x}, {:down, distance}), do: {y + distance, x}
   defp move_head({y, x}, {:left, distance}), do: {y, x - distance}
   defp move_head({y, x}, {:right, distance}), do: {y, x + distance}
+
+  defp move_tails(head, tails, visited_list) do
+    Enum.zip(tails, visited_list)
+    |> Enum.reduce([{head, MapSet.new()}], fn {tail, visited}, acc ->
+      [{prev_knot, _prev_visited} | _] = acc
+
+      {tail, visited} = move_tail(prev_knot, tail, visited)
+
+      [{tail, visited} | acc]
+    end)
+    |> Enum.reverse()
+    |> Enum.drop(1)
+    |> Enum.unzip()
+  end
 
   defp move_tail(head, tail, visited) do
     if adjacent?(head, tail) do
@@ -83,3 +113,4 @@ end
 
 File.read!("input.txt")
 |> tap(&Day9.part1/1)
+|> tap(&Day9.part2/1)
