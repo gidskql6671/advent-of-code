@@ -1,5 +1,5 @@
 # Advent of Code 2019
-[Advent of Code 2019](https://adventofcode.com/2019)들을 해결한 디렉토리
+[Advent of Code 2019](https://adventofcode.com/2019)의 문제를 번역하고, 풀이 코드를 정리한 페이지
 
 - [Day 1: 로켓 방정식의 횡포 (The Tyranny of the Rocket Equation)](./day1)
 - [Day 2: 1202 프로그램 알람 (1202 Program Alarm)](./day2)
