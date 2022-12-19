@@ -228,3 +228,90 @@ Monkey 3 inspected items 105 times.
 이 예에서 가장 활동적인 두 원숭이는 물건을 `101`번, `105`번 검사했습니다. 이 원숭이들의 **속임수(monkey business)** 수준은 두 값을 곱하여 찾을 수 있습니다. (`10605`)
 
 20 라운드 동안 검사한 물건의 수를 세어 추적할 원숭이를 파악합니다. 20 라운드 뒤의 추적할 원숭이들의 속임수 수준은 몇 입니까?
+
+## Part 2
+당신은 물건을 되돌려받지 못할까 걱정되기 시작합니다. 이 걱정때문에, 이제는 더 이상 원숭이의 검사가 물건을 손상시키지 않았다는 **안도감이 걱정 수준을 3으로 나누지 않게 되었습니다.**
+
+불행하게도, 그 안도감이 당신의 걱정 수준이 **터무니없는 수준**에 도달하는 것을 막는 전부였습니다. 당신은 이제 **당신의 걱정 수준을 관리할 수 있는 다른 방법**을 찾아야 합니다.
+
+원숭이들이 던지는 속도를 보니, 당신은 이 원숭이들이 **매우 오랫동안** 놀이를 진행할 수 있을 것 같습니다. 아마 `10000` 라운드 정도요!
+
+이 새로운 규칙을 적용하여 10000 라운드 후의 속임수 수준을 파악해봅시다. 위와 동일한 예를 사용하겠습니다.
+
+``` text
+== After round 1 ==
+Monkey 0 inspected items 2 times.
+Monkey 1 inspected items 4 times.
+Monkey 2 inspected items 3 times.
+Monkey 3 inspected items 6 times.
+
+== After round 20 ==
+Monkey 0 inspected items 99 times.
+Monkey 1 inspected items 97 times.
+Monkey 2 inspected items 8 times.
+Monkey 3 inspected items 103 times.
+
+== After round 1000 ==
+Monkey 0 inspected items 5204 times.
+Monkey 1 inspected items 4792 times.
+Monkey 2 inspected items 199 times.
+Monkey 3 inspected items 5192 times.
+
+== After round 2000 ==
+Monkey 0 inspected items 10419 times.
+Monkey 1 inspected items 9577 times.
+Monkey 2 inspected items 392 times.
+Monkey 3 inspected items 10391 times.
+
+== After round 3000 ==
+Monkey 0 inspected items 15638 times.
+Monkey 1 inspected items 14358 times.
+Monkey 2 inspected items 587 times.
+Monkey 3 inspected items 15593 times.
+
+== After round 4000 ==
+Monkey 0 inspected items 20858 times.
+Monkey 1 inspected items 19138 times.
+Monkey 2 inspected items 780 times.
+Monkey 3 inspected items 20797 times.
+
+== After round 5000 ==
+Monkey 0 inspected items 26075 times.
+Monkey 1 inspected items 23921 times.
+Monkey 2 inspected items 974 times.
+Monkey 3 inspected items 26000 times.
+
+== After round 6000 ==
+Monkey 0 inspected items 31294 times.
+Monkey 1 inspected items 28702 times.
+Monkey 2 inspected items 1165 times.
+Monkey 3 inspected items 31204 times.
+
+== After round 7000 ==
+Monkey 0 inspected items 36508 times.
+Monkey 1 inspected items 33488 times.
+Monkey 2 inspected items 1360 times.
+Monkey 3 inspected items 36400 times.
+
+== After round 8000 ==
+Monkey 0 inspected items 41728 times.
+Monkey 1 inspected items 38268 times.
+Monkey 2 inspected items 1553 times.
+Monkey 3 inspected items 41606 times.
+
+== After round 9000 ==
+Monkey 0 inspected items 46945 times.
+Monkey 1 inspected items 43051 times.
+Monkey 2 inspected items 1746 times.
+Monkey 3 inspected items 46807 times.
+
+== After round 10000 ==
+Monkey 0 inspected items 52166 times.
+Monkey 1 inspected items 47830 times.
+Monkey 2 inspected items 1938 times.
+Monkey 3 inspected items 52013 times.
+```
+
+10000 라운드 후, 가장 활동적인 두 원숭이는 물건을 52166번, 52013번 검사했습니다. 이것들을 곱하면, 속임수 수준은 이제 `2713310158`이 됩니다.
+
+각 물건을 검사한 후 걱정 수준을 더 이상 3으로 나누지 않습니다. 당신은 이제 걱정 수준을 관리할 수 있는 다른 방법을 찾아야 합니다. 퍼즐 입력의 초기 상태에서 다시 시작하여, 10000 라운드 후의 속임수 수준은 몇 인가요?
