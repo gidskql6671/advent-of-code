@@ -1,23 +1,25 @@
 defmodule Day11.Memory do
-  def run(part, name) do
-    ets_name = get_ets_name(part, name)
+  def run(name) do
+    ets_name = get_ets_name(name)
 
     :ets.new(ets_name, [:set, :public, :named_table])
   end
 
-  def get(part, name, key) do
-    ets_name = get_ets_name(part, name)
+  def exit(name), do: name |> get_ets_name() |> :ets.delete()
+
+  def get(name, key) do
+    ets_name = get_ets_name(name)
 
     :ets.lookup(ets_name, key) |> Keyword.get(key)
   end
 
-  def set(part, name, keywords) do
-    ets_name = get_ets_name(part, name)
+  def set(name, keywords) do
+    ets_name = get_ets_name(name)
 
     :ets.insert(ets_name, keywords)
   end
 
-  defp get_ets_name(part, name), do: String.to_atom("ets-#{part}-#{name}")
+  defp get_ets_name(name), do: String.to_atom("ets-#{name}")
 end
 
 defmodule Day11 do
@@ -33,19 +35,18 @@ defmodule Day11 do
   def part1(input) do
     input
     |> parse_input()
-    |> simulate(20, 1, 3)
-    |> find_most_active_monkeys(2, 1)
+    |> simulate(20, &div(&1, 3))
+    |> find_most_active_monkeys(2)
     |> Enum.product()
     |> IO.inspect(label: "part1")
   end
 
   def part2(input) do
-    info = parse_input(input)
-
-    lcm = get_test_values_lcm(info)
-
-    simulate(info, 10_000, 2, lcm)
-    |> find_most_active_monkeys(2, 2)
+    input
+    |> parse_input()
+    |> then(&{&1, get_test_values_lcm(&1)})
+    |> then(fn {info, lcm} -> simulate(info, 10_000, &rem(&1, lcm)) end)
+    |> find_most_active_monkeys(2)
     |> Enum.product()
     |> IO.inspect(label: "part2")
   end
@@ -84,22 +85,28 @@ defmodule Day11 do
     Regex.run(regex, string) |> Enum.at(1)
   end
 
-  defp simulate(info, total_round, part, divider) do
+  defp simulate(info, total_round, post_inspect_fn) do
     monkey_total_count = Enum.count(info)
     info = Enum.into(info, %{}, fn {k, v} -> {k, Map.put(v, :inspect_count, 0)} end)
 
     Enum.each(0..(monkey_total_count - 1), fn index ->
-      Memory.run(part, index)
+      Memory.run(index)
 
-      Memory.set(part, index, info |> Map.get(index) |> Enum.map(& &1))
+      Memory.set(index, info |> Map.get(index) |> Enum.map(& &1))
     end)
 
-    Enum.each(1..total_round, fn _ -> do_simulate(part, monkey_total_count, divider) end)
+    Enum.each(1..total_round, fn _ -> do_simulate(monkey_total_count, post_inspect_fn) end)
 
-    monkey_total_count
+    Enum.map(0..(monkey_total_count - 1), fn monkey_number ->
+      inspect_count = Memory.get(monkey_number, :inspect_count)
+
+      Memory.exit(monkey_number)
+
+      inspect_count
+    end)
   end
 
-  defp do_simulate(part, monkey_total_count, divider) do
+  defp do_simulate(monkey_total_count, post_inspect_fn) do
     0..(monkey_total_count - 1)
     |> Enum.each(fn monkey_number ->
       %{
@@ -110,56 +117,55 @@ defmodule Day11 do
         operation: operation,
         operand: operand,
         inspect_count: inspect_count
-      } = get_data_from_memory(part, monkey_number)
+      } = get_data_from_memory(monkey_number)
 
       items
-      |> Enum.map(&inspect_item(part, &1, {operation, operand}, divider))
+      |> Enum.map(&inspect_item(&1, {operation, operand}, post_inspect_fn))
       |> Enum.map(&test_item(&1, test))
       |> Enum.each(fn
-        {item, true} -> throw_item(item, if_true, part)
-        {item, false} -> throw_item(item, if_false, part)
+        {item, true} -> throw_item(item, if_true)
+        {item, false} -> throw_item(item, if_false)
       end)
 
-      Memory.set(part, monkey_number,
+      Memory.set(monkey_number,
         items: [],
         inspect_count: inspect_count + length(items)
       )
     end)
   end
 
-  defp get_data_from_memory(part, monkey_number) do
+  defp get_data_from_memory(monkey_number) do
     %{
-      items: Memory.get(part, monkey_number, :items),
-      test: Memory.get(part, monkey_number, :test),
-      if_true: Memory.get(part, monkey_number, :if_true),
-      if_false: Memory.get(part, monkey_number, :if_false),
-      operation: Memory.get(part, monkey_number, :operation),
-      operand: Memory.get(part, monkey_number, :operand),
-      inspect_count: Memory.get(part, monkey_number, :inspect_count)
+      items: Memory.get(monkey_number, :items),
+      test: Memory.get(monkey_number, :test),
+      if_true: Memory.get(monkey_number, :if_true),
+      if_false: Memory.get(monkey_number, :if_false),
+      operation: Memory.get(monkey_number, :operation),
+      operand: Memory.get(monkey_number, :operand),
+      inspect_count: Memory.get(monkey_number, :inspect_count)
     }
   end
 
-  defp inspect_item(part, item, {operation, operand}, divider) do
+  defp inspect_item(item, {operation, operand}, post_inspect_fn) do
     operand = if operand == "old", do: item, else: operand
 
     case operation do
       "+" -> item + operand
       "*" -> item * operand
     end
-    |> then(&if part == 1, do: div(&1, divider), else: rem(&1, divider))
+    |> then(fn item -> post_inspect_fn.(item) end)
   end
 
   defp test_item(item, test), do: {item, rem(item, test) == 0}
 
-  defp throw_item(item, to, part) do
-    to_monkey_items = Memory.get(part, to, :items)
+  defp throw_item(item, to) do
+    to_monkey_items = Memory.get(to, :items)
 
-    Memory.set(part, to, items: to_monkey_items ++ [item])
+    Memory.set(to, items: to_monkey_items ++ [item])
   end
 
-  defp find_most_active_monkeys(monkey_total_count, find_monkey_count, part) do
-    0..(monkey_total_count - 1)
-    |> Enum.map(&Memory.get(part, &1, :inspect_count))
+  defp find_most_active_monkeys(inspect_count_list, find_monkey_count) do
+    inspect_count_list
     |> Enum.sort(:desc)
     |> Enum.take(find_monkey_count)
   end
