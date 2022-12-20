@@ -12,3 +12,4 @@
 - [Day 9: 밧줄 다리 (Rope Bridge)](./day9)
 - [Day 10: 브라운관 (Cathode-Ray Tube)](./day10)
 - [Day 11: Monkey in the Middle](./day11)
+- [Day 12: 언덕 오르기 알고리즘 (Hill Climbing Algorithm)](./day12)
