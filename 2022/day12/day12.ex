@@ -10,6 +10,13 @@ defmodule Day12 do
     |> IO.inspect(label: "part1")
   end
 
+  def part2(input) do
+    input
+    |> parse_input()
+    |> simulate([?S, ?a])
+    |> IO.inspect(label: "part1")
+  end
+
   defp parse_input(input) do
     input
     |> String.split("\n")
@@ -24,20 +31,24 @@ defmodule Day12 do
     |> Enum.into(%{}, fn {v, index} -> {index, v} end)
   end
 
-  defp simulate(grid) do
-    start_position = find_position_by_value(grid, ?S)
+  defp simulate(grid, start_values \\ [?S]) do
+    start_positions = find_positions_by_values(grid, start_values)
     end_position = find_position_by_value(grid, ?E)
 
     grid =
       grid
-      |> put_in(Tuple.to_list(start_position), ?a)
+      |> put_in(Tuple.to_list(find_position_by_value(grid, ?S)), ?a)
       |> put_in(Tuple.to_list(end_position), ?z)
 
-    visited = Enum.into(grid, %{}, fn {i, _} -> {i, %{}} end)
+    start_positions
+    |> Enum.map(fn start_position ->
+      visited = Enum.into(grid, %{}, fn {i, _} -> {i, %{}} end)
 
-    queue = :queue.new() |> push({start_position, 0})
+      queue = :queue.new() |> push({start_position, 0})
 
-    bfs(grid, end_position, visited, queue)
+      bfs(grid, end_position, visited, queue)
+    end)
+    |> Enum.min()
   end
 
   defp find_position_by_value(grid, value) do
@@ -51,10 +62,18 @@ defmodule Day12 do
     end)
   end
 
+  defp find_positions_by_values(grid, values) do
+    Enum.reduce(grid, [], fn {i, row}, result ->
+      Enum.reduce(row, result, fn {j, ele}, result ->
+        if Enum.any?(values, &(&1 == ele)), do: [{i, j} | result], else: result
+      end)
+    end)
+  end
+
   defp bfs(grid, {end_y, end_x} = end_pos, visited, queue) do
     case pop(queue) do
       {_queue, :empty} ->
-        -1
+        999_999
 
       {_queue, {{^end_y, ^end_x}, step}} ->
         step
@@ -120,3 +139,4 @@ end
 
 File.read!("input.txt")
 |> tap(&Day12.part1/1)
+|> tap(&Day12.part2/1)
