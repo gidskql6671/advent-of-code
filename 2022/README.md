@@ -13,3 +13,4 @@
 - [Day 10: 브라운관 (Cathode-Ray Tube)](./day10)
 - [Day 11: Monkey in the Middle](./day11)
 - [Day 12: 언덕 오르기 알고리즘 (Hill Climbing Algorithm)](./day12)
+- [Day 13: 조난 신호 (Distress Signal)](./day13)
