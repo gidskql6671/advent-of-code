@@ -14,3 +14,4 @@
 - [Day 11: Monkey in the Middle](./day11)
 - [Day 12: 언덕 오르기 알고리즘 (Hill Climbing Algorithm)](./day12)
 - [Day 13: 조난 신호 (Distress Signal)](./day13)
+- [Day 14: 표토 저수지 (Regolith Reservoir)](./day14)
