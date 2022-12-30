@@ -6,8 +6,16 @@ defmodule Day14 do
     input
     |> parse_input()
     |> make_cave()
-    |> simulate()
+    |> simulate_part1()
     |> IO.inspect(label: "part1")
+  end
+
+  def part2(input) do
+    input
+    |> parse_input()
+    |> make_cave()
+    |> simulate_part2()
+    |> IO.inspect(label: "part2")
   end
 
   defp parse_input(input) do
@@ -43,19 +51,40 @@ defmodule Day14 do
     Enum.reduce(from_y..to_y, grid, fn y, grid -> put_into_grid(grid, {y, x}, "#") end)
   end
 
-  defp simulate(grid) do
+  defp simulate_part1(grid) do
     floor_y =
       grid
       |> Enum.map(fn {y, _} -> y end)
       |> Enum.max()
 
-    simulate(grid, floor_y, 0)
+    simulate_part1(grid, floor_y, 0)
   end
 
-  defp simulate(grid, floor_y, count) do
+  defp simulate_part1(grid, floor_y, count) do
     case fall_sand(grid, floor_y, @source) do
-      {:ok, grid} -> simulate(grid, floor_y, count + 1)
+      {:ok, grid} -> simulate_part1(grid, floor_y, count + 1)
       :infinite -> count
+    end
+  end
+
+  defp simulate_part2(grid) do
+    floor_y =
+      grid
+      |> Enum.map(fn {y, _} -> y end)
+      |> Enum.max()
+      |> Kernel.+(2)
+
+    grid = Enum.reduce(0..1000, grid, fn x, grid -> put_into_grid(grid, {floor_y, x}, "#") end)
+
+    simulate_part2(grid, 0)
+  end
+
+  defp simulate_part2(grid, count) do
+    {:ok, grid} = fall_sand(grid, 1_000_000, @source)
+
+    case get_in(grid, Tuple.to_list(@source)) do
+      nil -> simulate_part2(grid, count + 1)
+      _ -> count + 1
     end
   end
 
@@ -83,3 +112,4 @@ end
 
 File.read!("input.txt")
 |> tap(&Day14.part1/1)
+|> tap(&Day14.part2/1)
