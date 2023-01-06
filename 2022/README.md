@@ -16,3 +16,4 @@
 - [Day 13: 조난 신호 (Distress Signal)](./day13)
 - [Day 14: 표토 저수지 (Regolith Reservoir)](./day14)
 - [Day 15: 비콘이 없는 구역 (Beacon Exclusion Zone)](./day15)
+- [Day 16: 코끼리 화산 (Proboscidea Volcanium)](./day16)
