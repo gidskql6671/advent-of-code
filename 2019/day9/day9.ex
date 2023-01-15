@@ -204,11 +204,21 @@ end
 
 defmodule Day9 do
   def part1(input) do
-    name = :amplifier
+    name = :amplifier1
     memory = parse_input(input)
 
     Amplifier.start_link(name: name, memory: memory)
     Amplifier.push_input(name, 1)
+    Amplifier.run(name)
+    Amplifier.exit(name)
+  end
+
+  def part2(input) do
+    name = :amplifier2
+    memory = parse_input(input)
+
+    Amplifier.start_link(name: name, memory: memory)
+    Amplifier.push_input(name, 2)
     Amplifier.run(name)
     Amplifier.exit(name)
   end
@@ -224,3 +234,4 @@ end
 
 File.read!("input.txt")
 |> tap(&Day9.part1/1)
+|> tap(&Day9.part2/1)
