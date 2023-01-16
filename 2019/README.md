@@ -10,3 +10,4 @@
 - [Day 7: 증폭 회로 (Amplification Circuit)](./day7)
 - [Day 8: 우주 이미지 포맷 (Space Image Format)](./day8)
 - [Day 9: 센서 강화 (Sensor Boost)](./day9)
+- [Day 10: 감시 스테이션 (Monitoring Station)](./day10)
