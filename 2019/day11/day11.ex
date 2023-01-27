@@ -333,6 +333,47 @@ defmodule Day11 do
     :ets.delete(:grid)
   end
 
+  def part2(input) do
+    input = parse_input(input)
+    name = :amplifier
+
+    :ets.new(:grid, [:set, :public, :named_table])
+    :ets.insert(:grid, {{0, 0}, 1})
+    Amplifier.start_link(name: name, memory: input)
+    Amplifier.run(name)
+    Amplifier.exit(name)
+
+    grid =
+      :grid
+      |> :ets.match({:"$1", :"$2"})
+      |> Enum.into(%{}, fn [pos, color] -> {pos, color} end)
+
+    :ets.delete(:grid)
+
+    {{min_y, _}, {max_y, _}} =
+      grid
+      |> Map.keys()
+      |> Enum.min_max_by(fn {y, _x} -> y end)
+
+    {{_, min_x}, {_, max_x}} =
+      grid
+      |> Map.keys()
+      |> Enum.min_max_by(fn {_y, x} -> x end)
+
+    for y <- min_y..max_y do
+      for x <- min_x..max_x do
+        case Map.get(grid, {y, x}, 0) do
+          0 -> "⬜️"
+          1 -> "⬛"
+          2 -> "🟦"
+        end
+      end
+      |> Enum.join()
+    end
+    |> Enum.join("\n")
+    |> IO.puts()
+  end
+
   defp parse_input(input) do
     input
     |> String.split(",", trim: true)
@@ -344,3 +385,4 @@ end
 
 File.read!("input.txt")
 |> tap(&Day11.part1/1)
+|> tap(&Day11.part2/1)
