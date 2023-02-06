@@ -268,11 +268,19 @@ defmodule Day13 do
   def part1(input) do
     Amplifier.start_link(name: @amplifier, memory: parse_input(input))
 
-    run_amplifier()
+    run_amplifier_for_part1()
     |> tap(fn _ -> Amplifier.exit(@amplifier) end)
     |> tap(&print/1)
     |> count_block()
     |> IO.inspect(label: "part1")
+  end
+
+  def part2(input) do
+    memory = input |> parse_input() |> Map.put(0, 2)
+    Amplifier.start_link(name: @amplifier, memory: memory)
+
+    run_amplifier_for_part2()
+    |> tap(fn _ -> Amplifier.exit(@amplifier) end)
   end
 
   defp parse_input(input) do
@@ -283,13 +291,13 @@ defmodule Day13 do
     |> Enum.into(%{}, fn {val, i} -> {i, val} end)
   end
 
-  defp run_amplifier(grid \\ %{}) do
+  defp run_amplifier_for_part1(grid \\ %{}) do
     with {:output, x} <- Amplifier.exec(@amplifier),
          {:output, y} <- Amplifier.exec(@amplifier),
          {:output, id} <- Amplifier.exec(@amplifier) do
       grid
       |> Map.put({x, y}, id)
-      |> run_amplifier()
+      |> run_amplifier_for_part1()
     else
       :input ->
         raise "???"
@@ -299,7 +307,65 @@ defmodule Day13 do
     end
   end
 
+  defp run_amplifier_for_part2(grid \\ %{}, score \\ 0) do
+    with {:output, x} <- Amplifier.exec(@amplifier),
+         {:output, y} <- Amplifier.exec(@amplifier),
+         {:output, val} <- Amplifier.exec(@amplifier) do
+      case parse_operation(x, y, val) do
+        {:score, cur_score} ->
+          run_amplifier_for_part2(grid, cur_score)
+
+        {:grid, {pos, id}} ->
+          grid
+          |> Map.put(pos, id)
+          |> run_amplifier_for_part2(score)
+      end
+    else
+      :input ->
+        print(grid)
+        IO.inspect(score, label: "점수")
+        Process.sleep(10)
+
+        grid
+        |> tap(&cast_move_ball/1)
+        |> run_amplifier_for_part2(score)
+
+      :exit ->
+        print(grid)
+        IO.inspect(score, label: "Part2 - 최종 점수")
+    end
+  end
+
+  defp parse_operation(-1, 0, score), do: {:score, score}
+  defp parse_operation(x, y, id), do: {:grid, {{x, y}, id}}
+
+  defp cast_move_ball(grid) do
+    with {ball_x, _} <- get_cur_ball_pos(grid),
+         {paddle_x, _} <- get_cur_paddle_pos(grid) do
+      cond do
+        ball_x < paddle_x -> -1
+        ball_x > paddle_x -> 1
+        true -> 0
+      end
+    end
+    |> then(&Amplifier.push_input(@amplifier, &1))
+  end
+
+  defp get_cur_ball_pos(grid) do
+    grid
+    |> Enum.find(fn {_pos, id} -> id == @ball end)
+    |> elem(0)
+  end
+
+  defp get_cur_paddle_pos(grid) do
+    grid
+    |> Enum.find(fn {_pos, id} -> id == @paddle end)
+    |> elem(0)
+  end
+
   defp print(grid) do
+    IO.puts("\e[H\e[2J")
+
     for y <- 0..19, into: "" do
       for x <- 0..36, into: "\n" do
         case Map.get(grid, {x, y}, 0) do
@@ -321,3 +387,4 @@ end
 
 File.read!("input.txt")
 |> tap(&Day13.part1/1)
+|> tap(&Day13.part2/1)
