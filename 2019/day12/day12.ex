@@ -4,7 +4,7 @@ defmodule Day12 do
     velocity_list = Enum.map(pos_list, &get_init_velocity/1)
 
     Enum.zip(pos_list, velocity_list)
-    |> simulate_until_step(1_000)
+    |> simulate(%{step: 1_000})
     |> calc_total_energy()
     |> IO.inspect(label: "part1")
   end
@@ -22,19 +22,19 @@ defmodule Day12 do
       pos_x_list
       |> Enum.map(&get_init_velocity/1)
       |> then(&Enum.zip(pos_x_list, &1))
-      |> then(&simulate_until_same_moons(&1, &1))
+      |> then(&simulate(&1, %{moons: &1}))
 
     period_y =
       pos_y_list
       |> Enum.map(&get_init_velocity/1)
       |> then(&Enum.zip(pos_y_list, &1))
-      |> then(&simulate_until_same_moons(&1, &1))
+      |> then(&simulate(&1, %{moons: &1}))
 
     period_z =
       pos_z_list
       |> Enum.map(&get_init_velocity/1)
       |> then(&Enum.zip(pos_z_list, &1))
-      |> then(&simulate_until_same_moons(&1, &1))
+      |> then(&simulate(&1, %{moons: &1}))
 
     period_x
     |> lcm(period_y)
@@ -60,24 +60,16 @@ defmodule Day12 do
   # return: %{key: 0, ...}
   defp get_init_velocity(pos), do: for({key, _} <- pos, into: %{}, do: {key, 0})
 
-  defp simulate_until_step(moons, wanted_step, step \\ 0)
-  defp simulate_until_step(moons, wanted_step, wanted_step), do: moons
+  defp simulate(moons, base_condition, step \\ 0)
 
-  defp simulate_until_step(moons, wanted_step, step) do
+  defp simulate(moons, %{step: step}, step), do: moons
+  defp simulate(moons, %{moons: moons}, step) when step > 0, do: step
+
+  defp simulate(moons, base_condition, step) do
     moons
     |> Enum.map(&apply_gravity(&1, moons))
     |> Enum.map(&apply_velocity/1)
-    |> simulate_until_step(wanted_step, step + 1)
-  end
-
-  defp simulate_until_same_moons(moons, expected_moons, step \\ 0)
-  defp simulate_until_same_moons(moons, moons, step) when step > 0, do: step
-
-  defp simulate_until_same_moons(moons, expected_moons, step) do
-    moons
-    |> Enum.map(&apply_gravity(&1, moons))
-    |> Enum.map(&apply_velocity/1)
-    |> simulate_until_same_moons(expected_moons, step + 1)
+    |> simulate(base_condition, step + 1)
   end
 
   defp apply_gravity(moon, moons), do: Enum.reduce(moons, moon, &update_velocity(&2, &1))
