@@ -14,31 +14,17 @@ defmodule Day12 do
   def part2(input) do
     pos_list = parse_input(input)
 
-    pos_x_list = pos_list |> Enum.map(fn %{x: val} -> %{x: val} end)
-    pos_y_list = pos_list |> Enum.map(fn %{y: val} -> %{y: val} end)
-    pos_z_list = pos_list |> Enum.map(fn %{z: val} -> %{z: val} end)
+    pos_list
+    |> hd()
+    |> Map.keys()
+    |> Enum.map(fn key -> Enum.map(pos_list, &%{key => Map.fetch!(&1, key)}) end)
+    |> Enum.map(fn pos_list_of_axis ->
+      velocity_list = Enum.map(pos_list_of_axis, &get_init_velocity/1)
+      moons = Enum.zip(pos_list_of_axis, velocity_list)
 
-    period_x =
-      pos_x_list
-      |> Enum.map(&get_init_velocity/1)
-      |> then(&Enum.zip(pos_x_list, &1))
-      |> then(&simulate(&1, %{moons: &1}))
-
-    period_y =
-      pos_y_list
-      |> Enum.map(&get_init_velocity/1)
-      |> then(&Enum.zip(pos_y_list, &1))
-      |> then(&simulate(&1, %{moons: &1}))
-
-    period_z =
-      pos_z_list
-      |> Enum.map(&get_init_velocity/1)
-      |> then(&Enum.zip(pos_z_list, &1))
-      |> then(&simulate(&1, %{moons: &1}))
-
-    period_x
-    |> lcm(period_y)
-    |> lcm(period_z)
+      simulate(moons, %{moons: moons})
+    end)
+    |> Enum.reduce(1, fn period, acc -> lcm(period, acc) end)
     |> IO.inspect(label: "part2")
   end
 
