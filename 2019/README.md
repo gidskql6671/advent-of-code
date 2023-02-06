@@ -12,3 +12,4 @@
 - [Day 9: 센서 강화 (Sensor Boost)](./day9)
 - [Day 10: 감시 스테이션 (Monitoring Station)](./day10)
 - [Day 11: 우주 경찰 (Space Police)](./day11)
+- [Day 12: 다체 문제 (The N-Body Problem)](./day12)
