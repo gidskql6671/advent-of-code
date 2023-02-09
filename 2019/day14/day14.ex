@@ -7,6 +7,13 @@ defmodule Day14 do
     |> IO.inspect(label: "part1")
   end
 
+  def part2(input) do
+    input
+    |> parse_input()
+    |> daq(1, 1_000_000, 1_000_000_000_000)
+    |> IO.inspect(label: "part2")
+  end
+
   # returns: %{A: {10, %{ORE: 10}}, FUEL: {1, %{A: 2}}}
   defp parse_input(input) do
     input
@@ -85,7 +92,29 @@ defmodule Day14 do
       {source, source_count * ceil(need_count / create_count)}
     end)
   end
+
+  # devide and Conquer
+  # 단조 증가 혹은 단조 하락
+  defp daq(reactions, min_fuel, max_fuel, limit_ore, result \\ 0)
+
+  defp daq(_, min_fuel, max_fuel, _, result) when min_fuel > max_fuel,
+    do: result
+
+  defp daq(reactions, min_fuel, max_fuel, limit_ore, result) do
+    cur_fuel = div(min_fuel + max_fuel, 2)
+
+    %{ORE: need_ore} = topological_sort(reactions, %{FUEL: cur_fuel})
+
+    cond do
+      need_ore <= limit_ore ->
+        daq(reactions, cur_fuel + 1, max_fuel, limit_ore, max(result, cur_fuel))
+
+      true ->
+        daq(reactions, min_fuel, cur_fuel - 1, limit_ore, result)
+    end
+  end
 end
 
 File.read!("input.txt")
 |> tap(&Day14.part1/1)
+|> tap(&Day14.part2/1)
