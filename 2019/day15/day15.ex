@@ -272,6 +272,24 @@ defmodule Day15 do
     |> IO.inspect(label: "part1")
   end
 
+  def part2(input) do
+    Amplifier.start_link(name: @amplifier, memory: parse_input(input))
+    grid = run_amplifier()
+    Amplifier.exit(@amplifier)
+
+    oxygen_system_pos =
+      grid
+      |> Enum.find(fn {_k, v} -> v == "O" end)
+      |> elem(0)
+
+    queue = :queue.new()
+    queue = :queue.in({oxygen_system_pos, 0}, queue)
+
+    grid
+    |> bfs_all_search(%{oxygen_system_pos => true}, queue)
+    |> IO.inspect(label: "part2")
+  end
+
   defp parse_input(input) do
     input
     |> String.split(",", trim: true)
@@ -373,12 +391,24 @@ defmodule Day15 do
     end
   end
 
+  defp bfs_all_search(grid, visited, queue, max_distance \\ 0) do
+    case :queue.out(queue) do
+      {{:value, {pos, distance}}, queue} ->
+        {visited, queue} = update_bfs_info(grid, visited, queue, {pos, distance})
+
+        bfs_all_search(grid, visited, queue, distance)
+
+      {:empty, _} ->
+        max_distance
+    end
+  end
+
   defp end?(grid, pos), do: Map.get(grid, pos) == "O"
 
   defp update_bfs_info(grid, visited, queue, {{y, x}, distance}) do
     @dir
     |> Enum.reduce({visited, queue}, fn {dy, dx}, {visited, queue} ->
-      {ny, nx} = npos = {y + dy, x + dx}
+      npos = {y + dy, x + dx}
 
       with false <- Map.has_key?(visited, npos),
            true <- move_possible?(grid, npos) do
@@ -403,3 +433,4 @@ end
 
 File.read!("input.txt")
 |> tap(&Day15.part1/1)
+|> tap(&Day15.part2/1)
