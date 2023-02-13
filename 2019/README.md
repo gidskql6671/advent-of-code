@@ -16,3 +16,4 @@
 - [Day 13: 돌봄 패키지 (Care Package)](./day13)
 - [Day 14: 우주 화학양론 (Space Stoichiometry)](./day14)
 - [Day 15: 산소 시스템 (Oxygen System)](./day15)
+- [Day 16: 결함이 있는 전파 전송 (Flawed Frequency Transmission)](./day16)
