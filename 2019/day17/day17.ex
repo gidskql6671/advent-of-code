@@ -246,6 +246,15 @@ defmodule Amplifier do
     end
   end
 
+  def handle_cast({:push_input, inputs}, %{:ets_name => ets_name} = state) when is_list(inputs) do
+    ets_name
+    |> Memory.get()
+    |> Map.update(:inputs, inputs, &(&1 ++ inputs))
+    |> then(&Memory.set(ets_name, &1))
+
+    {:noreply, state}
+  end
+
   def handle_cast({:push_input, input}, %{:ets_name => ets_name} = state) do
     ets_name
     |> Memory.get()
@@ -267,10 +276,22 @@ defmodule Day17 do
 
     run_amplifier()
     |> tap(fn _ -> Amplifier.exit(@amplifier) end)
-    # |> print()
+    # |> tap(&print/1)
     |> get_alignment_parameters()
     |> Enum.sum()
     |> IO.inspect(label: "part1")
+  end
+
+  def part2(input) do
+    memory = input |> parse_input() |> Map.put(0, 2)
+    Amplifier.start_link(name: @amplifier, memory: memory)
+
+    continuous? = false
+    setup_operation(continuous?)
+
+    run_amplifier_part_2('', continuous?)
+    |> tap(fn _ -> Amplifier.exit(@amplifier) end)
+    |> IO.inspect(label: "part2")
   end
 
   defp parse_input(input) do
@@ -296,11 +317,31 @@ defmodule Day17 do
     end
   end
 
+  defp run_amplifier_part_2(str, continuous?) do
+    case Amplifier.exec(@amplifier) do
+      {:output, value} when value > 255 ->
+        value
+
+      {:output, ?\n} ->
+        IO.puts(str)
+
+        if continuous? == true and str == '' do
+          Process.sleep(200)
+          IO.puts("\e[H\e[2J")
+        end
+
+        run_amplifier_part_2('', continuous?)
+
+      {:output, value} ->
+        run_amplifier_part_2(str ++ [value], continuous?)
+    end
+  end
+
   defp print(grid) do
     {{min_y, min_x}, {max_y, max_x}} = min_max_pos(grid)
 
     for i <- min_y..max_y, into: <<>> do
-      line = for j <- min_x..max_x, do: Map.get(grid, {i, j})
+      line = for j <- min_x..max_x, do: Map.get(grid, {i, j}, '.')
 
       (line ++ ['\n'])
       |> List.to_string()
@@ -331,7 +372,24 @@ defmodule Day17 do
 
     {{min_y, min_x}, {max_y, max_x}}
   end
+
+  defp setup_operation(continuous?) do
+    # 손수 구했다 이말이야
+    # routine: A, B, B, A, C, A, C, A, C, B
+    # A: L,6,R,12,R,8
+    # B: R,8,R,12,L,12
+    # C: R,12,L,12,L,4,L,4
+
+    Amplifier.push_input(@amplifier, 'A,B,B,A,C,A,C,A,C,B\n')
+    Amplifier.push_input(@amplifier, 'L,6,R,12,R,8\n')
+    Amplifier.push_input(@amplifier, 'R,8,R,12,L,12\n')
+    Amplifier.push_input(@amplifier, 'R,12,L,12,L,4,L,4\n')
+
+    continuous = if continuous?, do: 'y\n', else: 'n\n'
+    Amplifier.push_input(@amplifier, continuous)
+  end
 end
 
 File.read!("input.txt")
 |> tap(&Day17.part1/1)
+|> tap(&Day17.part2/1)
